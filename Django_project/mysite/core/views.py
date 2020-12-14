@@ -53,3 +53,15 @@ def round(data):
     data_new['Retention Time Roundoff (in mins)'] = round_reten_time
     New_path = settings.MEDIA_ROOT + '\data_new'
     data_new.to_csv(New_path, index=False)
+
+def extract_round(data_new):
+    for i in range(int(max(data_new['Retention Time Roundoff (in mins)']))+1):
+        if float(i) in data_new['Retention Time Roundoff (in mins)']:
+            is_long = data_new['Retention Time Roundoff (in mins)']==i
+            data_RT=data_new[is_long]
+            data_RT= data_RT.loc[:, data_RT.columns != 'm/z']
+            data_RT= data_RT.loc[:, data_RT.columns != 'Retention time (min)']
+            data_RT= data_RT.loc[:, data_RT.columns != 'Accepted Compound ID']
+            data_av = data_RT.mean(axis=0)
+            PC_path = settings.MEDIA_ROOT + '\data_mean_rot'+str(i)
+            data_av.to_csv (PC_path+'.csv', encoding='utf-8')
